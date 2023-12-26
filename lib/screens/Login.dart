@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:green_quest/screens/HomeScreen.dart';
 import 'package:green_quest/screens/Register.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -62,7 +63,7 @@ class LoginScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Add your login logic here
-                // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF4CAF50)), // Custom button color
