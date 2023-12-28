@@ -1,52 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:green_quest/models/BottomNavigation.dart';
-import 'package:green_quest/models/Drawer.dart';
-import 'package:green_quest/screens/Login.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:green_quest/screens/Tasks.dart';
-import 'package:green_quest/screens/Trees.dart';
+import 'package:green_quest/components/BottomNavigation.dart';
+import 'package:green_quest/components/Drawer.dart';
+import 'package:green_quest/helpers/DBHelpers.dart';
+import 'package:green_quest/models/User.dart'; // Import your DBHelpers file
 
 class HomeScreen extends StatefulWidget {
+  final int? userId;
+
+  HomeScreen({this.userId});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  String? username;
+  int? points;
 
-  Future<void> _confirmLogout() async {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                _logout();
-              },
-              child: const Text('Logout'),
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserDetails();
   }
 
-  void _logout() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
-    );
+  Future<void> _fetchUserDetails() async {
+    User? userDetails = await DbHelper.fetchUserById(widget.userId!);
+    if (userDetails != null) {
+      setState(() {
+        username = userDetails.username;
+        points = userDetails.points;
+      });
+    }
   }
+
+ 
 
   Widget _buildCard(String title, String description, String imageUrl, {bool reverse = false}) {
   return GestureDetector(
@@ -158,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      drawer: AppDrawer(),
+      drawer: AppDrawer(username: username!, points: points!),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
