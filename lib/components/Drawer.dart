@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:green_quest/helpers/DBHelpers.dart';
 import 'package:green_quest/models/User.dart';
 import 'package:green_quest/screens/Login.dart';
 
@@ -24,18 +23,18 @@ class _AppDrawerState extends State<AppDrawer> {
           Container(
             height: 120,
             child: DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFF9DC08B),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.transparent,
                     backgroundImage: AssetImage("assets/images/logo.png"),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,14 +42,14 @@ class _AppDrawerState extends State<AppDrawer> {
                       children: [
                         Text(
                           'Welcome ${widget.username}!',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: Colors.white,
                           ),
                         ),
                         Text(
                           'Points: ${widget.points}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             color: Colors.white,
                           ),
@@ -63,22 +62,22 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text('Account'),
+            leading: const Icon(Icons.account_circle),
+            title: const Text('Account'),
             onTap: () {
               // Add your account logic here
             },
           ),
           ListTile(
-            leading: Icon(Icons.help),
-            title: Text('Help'),
+            leading: const Icon(Icons.help),
+            title: const Text('Help'),
             onTap: () {
               // Add your help logic here
             },
           ),
           ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('Logout'),
             onTap: () {
               _confirmLogout();
             },

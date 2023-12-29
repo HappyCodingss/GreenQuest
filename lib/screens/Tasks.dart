@@ -9,18 +9,15 @@ import 'package:green_quest/models/User.dart';
 import 'package:image_picker/image_picker.dart';
 
 class TasksScreen extends StatefulWidget {
-  final int? userId;
+  final int userId;
 
-  TasksScreen({this.userId});
+  TasksScreen({required this.userId});
 
   @override
   _TasksScreenState createState() => _TasksScreenState();
 }
 
 class _TasksScreenState extends State<TasksScreen> {
-  
-
-  
   String? username;
   int? points;
   List<Task> tasks = [];
@@ -32,6 +29,15 @@ class _TasksScreenState extends State<TasksScreen> {
     _fetchTasks();
   }
 
+Future<void> _fetchTasks() async {
+    // print("Fetching tasks for userId: ${widget.userId}");
+    List<Task> fetchedTasks = await DbHelper.fetchTasksNotDone();
+    // print("Fetched ${fetchedTasks.length} tasks");
+    setState(() {
+      tasks = fetchedTasks;
+    });
+    }
+
   Future<void> _fetchUserDetails() async {
     User? userDetails = await DbHelper.fetchUserById(widget.userId!);
     if (userDetails != null) {
@@ -42,39 +48,55 @@ class _TasksScreenState extends State<TasksScreen> {
     }
   }
 
-  Future<void> _fetchTasks() async {
-    // Fetch tasks from the database
-    List<Task> fetchedTasks = await DbHelper.fetchTasks();
-    
-    setState(() {
-      tasks = fetchedTasks;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // ... (rest of the code remains the same)
-
-      body: SingleChildScrollView(
-        child: Column(
-          children: tasks.map((task) => TaskAccordion(task: task)).toList(),
+    return Scaffold( appBar: AppBar(
+        title: const Text('Quest'),
+      ),
+      drawer: AppDrawer(username: username!, points: points!),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: tasks.isEmpty
+              ? _buildNoTasksContainer()
+              : Column(
+                  children: tasks.map((task) => TaskAccordion(task: task,  refreshTasks: _fetchTasks, userId: widget.userId, points: points ?? 0)).toList(),
+        
+                ),
         ),
       ),
       bottomNavigationBar: MyAppBottomNavigationBar(
         currentIndex: 1,
-        onTap: (index) {
-          // Handle bottom navigation item taps
-        },
+        onTap: (index) {},
+        userId: widget.userId,
       ),
     );
   }
-}
+  Widget _buildNoTasksContainer() {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: Center(
+        child: Image.asset(
+          "assets/images/noTask.png",
+          width: 200, 
+          height: 200,
+        ),
+      ),
+    );
+  }
+  }
+  
 
 class TaskAccordion extends StatefulWidget {
   final Task task;
+  final Function refreshTasks;
+  final int userId;
+  int? points;
 
-  const TaskAccordion({required this.task});
+ TaskAccordion({
+    required this.task, 
+    required this.refreshTasks, 
+    required this.userId, 
+    this.points});
 
   @override
   _TaskAccordionState createState() => _TaskAccordionState();
@@ -90,8 +112,7 @@ class _TaskAccordionState extends State<TaskAccordion> {
   }
 
   @override
-Widget build(BuildContext context) {
-  if (widget.task != null) {
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ExpansionTile(
@@ -103,12 +124,12 @@ Widget build(BuildContext context) {
                 widget.task.title ?? 'No Title',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
-                style: TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
               ),
             ),
             Text(
-              widget.task.points?.toString() ?? '0',
-              style: TextStyle(fontSize: 12.0, color: Colors.black),
+              widget.task.points?.toString() ?? '0' + ' points',
+              style: const TextStyle(fontSize: 12.0, color: Colors.black),
             ),
           ],
         ),
@@ -120,12 +141,12 @@ Widget build(BuildContext context) {
               children: [
                 Text(
                   widget.task.description ?? 'No description',
-                  style: TextStyle(color: Colors.black),
+                  style: const TextStyle(color: Colors.black),
                 ),
                 const SizedBox(height: 16.0),
                 TextField(
                   controller: controller,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter your submission...',
                     hintStyle: TextStyle(color: Colors.black),
                   ),
@@ -135,7 +156,7 @@ Widget build(BuildContext context) {
                   onPressed: () async {
                     await _pickImage();
                   },
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
               ],
             ),
@@ -143,27 +164,63 @@ Widget build(BuildContext context) {
         ],
       ),
     );
-  } else {
-    return Container(
-      child: Text('Error: Task is null.'),
-    );
-  }
-}
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      // Use the pickedFile to handle the selected image
-      // For example, you can display the image or upload it to a server
-      // print(pickedFile.path);
     }
-  }
 
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
+
+  
+
+  Future<void> _pickImage() async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile != null) {
+    try {
+      setState(() {
+        widget.task.isDone = 1;
+        // print("task is completed");
+      });
+
+      await DbHelper.updateTaskIsDone(widget.task.taskId!, widget.task.isDone!);
+      int taskPoints = widget.task.points ?? 0;
+      int newPoints = widget.points! + taskPoints;
+      await DbHelper.updateUserPoints(widget.userId, newPoints);
+      await widget.refreshTasks();
+      _showPointsGrantedDialog(taskPoints, newPoints);
+    } catch (e) {
+      // print("Error updating task: $e");
+    }
+  } else {
+    // print("No image picked");
+  }
+}
+
+
+
+
+
+void _showPointsGrantedDialog(int grantedPoints, int newPoints) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Points Granted"),
+        content: Text("Congratulations! You have been granted $grantedPoints points. Your new Points $newPoints"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child:const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }

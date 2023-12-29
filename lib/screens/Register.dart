@@ -22,113 +22,102 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/logo.png',
-                width: 150,
-                height: 150,
-              ),
-              const Gap(20),
-              TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  icon: Icon(Icons.email),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height:80),
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 150,
+                  height: 150,
                 ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  icon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-              TextField(
-                controller: _confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  icon: Icon(Icons.lock),
-                ),
-                obscureText: true,
-              ),
-              TextField(
-                controller: _imageController,
-                decoration: InputDecoration(
-                  labelText: 'ImageURL',
-                  icon: Icon(Icons.image),
-                ),
-                obscureText: true,
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: isChecked,
-                        onChanged: (value) {
-                          setState(() {
-                            isChecked = true;
-                          });
-                        },
-                      ),
-                      const Text('I agree to the terms and conditions'),
-                    ],
+                const Gap(20),
+                TextField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    icon: Icon(Icons.email),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('Forgot Password?'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    icon: Icon(Icons.lock),
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  _signUp();
-                  },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF4CAF50)),
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(double.infinity, 50)),
+                  obscureText: true,
                 ),
-                child: const Text('Sign Up', style: TextStyle(color: Colors.white)),
-              ),
-              const Gap(10),
-              const Text("Or", style: TextStyle(fontSize: 10)),
-              const Gap(10),
-              ElevatedButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                  minimumSize: MaterialStateProperty.all<Size>(const Size(double.infinity, 50)),
+                TextField(
+                  controller: _confirmPasswordController,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm Password',
+                    icon: Icon(Icons.lock),
+                  ),
+                  obscureText: true,
                 ),
-                child: const Text('Sign up via Google', style: TextStyle(color: Colors.white)),
-              ),
-              const Gap(15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Already Have An Account?"),
-                  const Gap(5),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      );
+                TextField(
+                  controller: _imageController,
+                  decoration: const InputDecoration(
+                    labelText: 'ImageURL',
+                    icon: Icon(Icons.image),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: isChecked,
+                          onChanged: (value) {
+                            setState(() {
+                              isChecked = true;
+                            });
+                          },
+                        ),
+                        const Text('I agree to the terms and conditions'),
+                      ],
+                    ),
+                    
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _signUp();
                     },
-                    child: const Text("Login", style: TextStyle(color: Colors.blue)),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF4CAF50)),
+                    minimumSize: MaterialStateProperty.all<Size>(const Size(double.infinity, 50)),
                   ),
-                ],
-              ),
-            ],
+                  child: const Text('Sign Up', style: TextStyle(color: Colors.white)),
+                ),
+                const Gap(10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Already Have An Account?"),
+                    const Gap(5),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                        );
+                      },
+                      child: const Text("Login", style: TextStyle(color: Colors.blue)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -152,12 +141,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       DbHelper.insertUser(newUser);
       
       // Show AlertDialog and handle navigation in its callback
+      // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Success"),
-            content: Text("You are successfully signed up!"),
+            title: const Text("Success"),
+            content: const Text("You are successfully signed up!"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -168,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -180,10 +170,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-  Future<bool> _userExists(String email) async {
-    List<Map<String, dynamic>> users = await DbHelper.fetchUsers();
-    return users.any((user) => user['username'] == email);
-  }
 
   void _showAlertDialog(String title, String content) {
     showDialog(
@@ -197,7 +183,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

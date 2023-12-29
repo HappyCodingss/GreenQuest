@@ -5,9 +5,9 @@ import 'package:green_quest/helpers/DBHelpers.dart';
 import 'package:green_quest/models/User.dart'; // Import your DBHelpers file
 
 class HomeScreen extends StatefulWidget {
-  final int? userId;
+  final int userId;
 
-  HomeScreen({this.userId});
+  HomeScreen({required this.userId});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchUserDetails() async {
-    User? userDetails = await DbHelper.fetchUserById(widget.userId!);
+    User? userDetails = await DbHelper.fetchUserById(widget.userId);
     if (userDetails != null) {
       setState(() {
         username = userDetails.username;
@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCard(String title, String description, String imageUrl, {bool reverse = false}) {
   return GestureDetector(
     onTap: () {
-      // Add navigation logic here
     },
     child: Card(
       elevation: 4,
@@ -115,36 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('GreenQuest'),
-        foregroundColor: Colors.white,
-        backgroundColor:const Color(0xFF9DC08B),
-        leading: Builder(
-          builder: (context) => GestureDetector(
-            onTap: () {
-              Scaffold.of(context).openDrawer();
-            },
-            child: Container(
-              margin: const EdgeInsets.only(left: 16, top: 8),
-              child: const CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.transparent,
-                backgroundImage: AssetImage(
-                  'assets/images/GreenQuestLogo.png',
-                ),
-              ),
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Add your search logic here
-            },
-            color: Colors.white,
-          ),
-        ],
+       appBar: AppBar(
+        title: const Text('Home'),
       ),
       drawer: AppDrawer(username: username!, points: points!),
       body: SingleChildScrollView(
@@ -193,6 +164,7 @@ _buildCard(
       _currentIndex = index;
     });
     },
+    userId: widget.userId,
     ),
     );
   }

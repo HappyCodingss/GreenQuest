@@ -5,185 +5,188 @@ import 'package:green_quest/helpers/DBHelpers.dart';
 import 'package:green_quest/models/User.dart';
 
 class TreesScreen extends StatefulWidget {
-  final int? userId;
+  final int userId;
 
-  TreesScreen({this.userId});
+  TreesScreen({required this.userId});
+
   @override
   _TreesScreenState createState() => _TreesScreenState();
 }
 
 class _TreesScreenState extends State<TreesScreen> {
+  List<Map<String, dynamic>> treeData = [];
   String? username;
-  int? points;
-  List<Map<String, dynamic>> treeData = [
-    {'title': 'Tree 1', 'imageUrl': 'https://placekitten.com/200/200', 'price': 50},
-    {'title': 'Tree 2', 'imageUrl': 'https://placekitten.com/201/201', 'price': 75},
-    {'title': 'Tree 3', 'imageUrl': 'https://placekitten.com/202/202', 'price': 100},
-  ];
-@override
+  int? userPoints; 
+
+  @override
   void initState() {
     super.initState();
     _fetchUserDetails();
+    DbHelper.initTrees();
+    _fetchTrees();
+     userPoints = userPoints ?? 0;
   }
+
   Future<void> _fetchUserDetails() async {
     User? userDetails = await DbHelper.fetchUserById(widget.userId!);
     if (userDetails != null) {
       setState(() {
         username = userDetails.username;
-        points = userDetails.points;
+        userPoints = userDetails.points; // Change points to userPoints
       });
     }
   }
+
+  Future<void> _fetchTrees() async {
+    List<Map<String, dynamic>> trees = await DbHelper.getTrees();
+    if (trees.isNotEmpty) {
+      setState(() {
+        treeData = trees;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trees'),
       ),
-      drawer: AppDrawer(username: username!, points: points!),
+      drawer: AppDrawer(username: username!, points: userPoints!),
       bottomNavigationBar: MyAppBottomNavigationBar(
         currentIndex: 2,
         onTap: (index) {
-          // Handle bottom navigation taps if needed
         },
+        userId: widget.userId,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 16.0,
-          ),
+        child: Column(
+          children: [
+            Expanded(
+        child: ListView.separated(
           itemCount: treeData.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 16.0),
           itemBuilder: (context, index) {
-            return TreeCard(
-              title: treeData[index]['title'],
-              imageUrl: treeData[index]['imageUrl'],
-              price: treeData[index]['price'],
-            );
-          },
+      return TreeCard(
+          title: treeData[index]['title'],
+          imageUrl: treeData[index]['imageUrl'],
+          price: treeData[index]['price'],
+          userPoints: userPoints!,
+          userId: widget.userId,
+      );
+    },
+  ),
+),
+
+          ],
         ),
       ),
     );
   }
+
+
+Future<int?> _fetchUserPoints() async {
+  User? userDetails = await DbHelper.fetchUserById(widget.userId!);
+  return userDetails?.points;
+}
 }
 
 class TreeCard extends StatefulWidget {
   final String title;
   final String imageUrl;
   final int price;
+  int userPoints;
+  final int userId;
 
-  TreeCard({required this.title, required this.imageUrl, required this.price});
+  TreeCard({required this.title, required this.imageUrl, required this.price, required this.userPoints, required this.userId});
 
   @override
   _TreeCardState createState() => _TreeCardState();
 }
 
 class _TreeCardState extends State<TreeCard> {
-  bool isHovered = false;
-
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            _showPurchaseDialog(context);
-          },
-          onHover: (hover) {
-            _handleHover(hover);
-          },
-          child: Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8.0),
-                  topRight: Radius.circular(8.0),
-                ),
-                child: Image.network(
-                  widget.imageUrl,
-                  fit: BoxFit.cover,
-                  height: 150, // Set the desired height for the image
-                  width: double.infinity,
-                ),
-              ),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                height: isHovered ? 60 : 0, // Adjust the desired height
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6), // Adjust the opacity as needed
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      widget.title,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      'Price: ${widget.price} points',
-                      style: TextStyle(fontSize: 14, color: Colors.green),
-                    ),
-                    SizedBox(height: 8.0),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showPurchaseDialog(context);
-                      },
-                      child: Text('Buy'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8.0),
+              topRight: Radius.circular(8.0),
+            ),
+            child: Image.network(
+              widget.imageUrl,
+              fit: BoxFit.cover,
+              height: 150, 
+              width: double.infinity,
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8.0),
+                Text(
+                  'Price: ${widget.price} points',
+                  style:const TextStyle(fontSize: 14, color: Colors.green),
+                ),
+                const SizedBox(height: 8.0),
+                ElevatedButton(
+                  onPressed: () {
+                    _showPurchaseDialog(context);
+                  },
+                  child: const Text('Buy'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
-
-  void _handleHover(bool hover) {
-    setState(() {
-      isHovered = hover;
-    });
-  }
-
   void _showPurchaseDialog(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
         child: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.network(
-                widget.imageUrl,
+                widget.imageUrl,  // Use widget.imageUrl
                 height: 100,
                 width: 200,
                 fit: BoxFit.cover,
               ),
               const SizedBox(height: 16),
               Text(
-                'Tree: ${widget.title}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                'Tree: ${widget.title}',  // Use widget.title
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                'Price: ${widget.price} points',
-                style: TextStyle(fontSize: 16, color: Colors.green),
+                'Price: ${widget.price} points',  // Use widget.price
+                style: const TextStyle(fontSize: 16, color: Colors.green),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  _handlePurchase(context);
+
                 },
-                child: Text('OK'),
+                child: Text('Buy'),
               ),
             ],
           ),
@@ -191,5 +194,31 @@ class _TreeCardState extends State<TreeCard> {
       );
     },
   );
+  }
+
+  void _handlePurchase(BuildContext context) {
+  if (widget.userPoints! >= widget.price) {
+    widget.userPoints = widget.userPoints! - widget.price;
+    DbHelper.updateUserPoints(widget.userId, widget.userPoints!);
+
+    Navigator.of(context).pop();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Congratulations! You helped our planet by purchasing a tree.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  } else {
+    
+    Navigator.of(context).pop();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(
+        content: const Text('You do not have enough points to purchase this tree.'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 }
 }

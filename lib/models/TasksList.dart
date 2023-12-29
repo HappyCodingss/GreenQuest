@@ -1,35 +1,29 @@
-import 'package:green_quest/helpers/DBHelpers.dart';
-
 class Task {
   int? taskId;
-   String? title;
-   String? description;  
-  int? isDone;
+  String? title;
+  String? description;
   int? points;
+  int? isDone;
 
+  Task({this.taskId, this.title, this.description, this.points,this.isDone,});
 
-  Task({this.title, 
-       this.description,
-       this.isDone, 
-       this.points,
-       });
-  
   Map<String, dynamic> toMap() {
     return {
-      DbHelper.colTaskId: taskId,
-      DbHelper.colTaskTitle: title,
-      DbHelper.colTaskPoints: points,
-      DbHelper.colTaskDescription: description,
-      DbHelper.colTaskCompleted: isDone,
+      'taskId': taskId,
+      'title': title,
+      'description': description,
+      'points': points,
+      'isDone': isDone,
     };
   }
 
-  Task.fromMap(Map<String, dynamic> map) {
-    // Initialize your User object properties from the map
-    taskId = map[DbHelper.colTaskId];
-    title = map[DbHelper.colTaskTitle];
-    points = map[DbHelper.colTaskPoints];
-    description = map[DbHelper.colTaskDescription];
-    isDone = map[DbHelper.colTaskCompleted];
+  factory Task.fromMap(Map<String, dynamic> map) {
+    return Task(
+      taskId: map['taskId'],
+      title: map['title'],
+      description: map['description'],
+      points: map['points'],
+      isDone: map['isDone'],
+    );
   }
 }

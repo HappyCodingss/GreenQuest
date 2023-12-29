@@ -7,8 +7,9 @@ import 'package:green_quest/screens/Trees.dart';
 class MyAppBottomNavigationBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final int userId;
 
-  MyAppBottomNavigationBar({required this.currentIndex, required this.onTap});
+  MyAppBottomNavigationBar({required this.currentIndex, required this.onTap, required this.userId});
 
   @override
   _MyAppBottomNavigationBarState createState() => _MyAppBottomNavigationBarState();
@@ -27,15 +28,15 @@ class _MyAppBottomNavigationBarState extends State<MyAppBottomNavigationBar> {
         switch (index) {
           case 0:
             // Navigate to the Home screen
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen(userId:widget.userId)));
             break;
           case 1:
             // Navigate to the Tasks screen
-            Navigator.push(context, MaterialPageRoute(builder: (context) => TasksScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TasksScreen(userId:widget.userId)));
             break;
           case 2:
             // Navigate to the Trees screen
-            Navigator.push(context, MaterialPageRoute(builder: (context) => TreesScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => TreesScreen(userId:widget.userId)));
             break;
           // Add more cases for additional screens if needed
         }

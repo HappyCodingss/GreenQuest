@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
 import 'package:green_quest/screens/Login.dart';
 
@@ -49,7 +48,7 @@ class _WelcomePageState extends State<WelcomePage> {
       bottomSheet: _currentPage == 2
           ? Container(
               width: double.infinity,
-              // color: Colors.green,
+             
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
                  style: ButtonStyle(
@@ -57,7 +56,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     elevation: MaterialStateProperty.all<double>(9.0),
                   ),
                 onPressed: () {
-                  // Navigate to the login screen after the last welcome screen
+                 
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => LoginScreen(),
@@ -70,7 +69,7 @@ class _WelcomePageState extends State<WelcomePage> {
           : _currentPage == 0 || _currentPage == 1
               ? Container(
                   width: double.infinity,
-                  // color: Colors.green,
+                 
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -78,11 +77,11 @@ class _WelcomePageState extends State<WelcomePage> {
                       if (_currentPage > 0) ...[
                         ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF609966)), // Custom color for the button
+                            backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF609966)), 
                             elevation: MaterialStateProperty.all<double>(9.0),
                   ),
                           onPressed: () {
-                            // Go to the previous page
+                           
                             _pageController.previousPage(
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
@@ -94,11 +93,11 @@ class _WelcomePageState extends State<WelcomePage> {
                       ],
                       ElevatedButton(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF609966)), // Custom color for the button
+                          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF609966)), 
                           elevation: MaterialStateProperty.all<double>(9.0),
                   ),
                         onPressed: () {
-                          // Go to the next page
+                          
                           _pageController.nextPage(
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.easeInOut,

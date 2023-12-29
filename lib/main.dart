@@ -5,8 +5,10 @@ import 'package:green_quest/screens/splashScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DbHelper.initTasks(); // Initialize fixed tasks
-  await DbHelper.insertFixedTasks(DbHelper.fixedTasks); // Insert fixed tasks
+  await DbHelper.initTasks(); 
+  await DbHelper.insertFixedTasks(DbHelper.fixedTasks); 
+  await DbHelper.openDB();
+  await DbHelper.initTrees();
   runApp(GreenQuest());
 }
 

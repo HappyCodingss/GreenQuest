@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:gap/gap.dart';
@@ -16,12 +15,12 @@ class _SplashLoaderState extends State<SplashLoader> {
   @override
   void initState() {
     super.initState();
-    // Add a delay to simulate a welcome screen
-    Timer(Duration(seconds: 3), () {
-      // Navigate to the home screen after the welcome screen
+  
+    Timer(const Duration(seconds: 3), () {
+     
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => WelcomePage(), // Replace with your HomeScreen widget
+          builder: (context) => WelcomePage(),
         ),
       );
     });
